@@ -1,0 +1,440 @@
+<!-- Copyright (C) INOXZENT.in Corporation. All rights reserved. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Companion</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Feather icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <!-- Vanta background -->
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+    <link rel="icon" href="hiestudio-3CvCAp2zYqQ.jpg" type="image/jpg">
+
+    <style>
+        :root{
+          --glass: rgba(255,255,255,0.06);
+          --glass-strong: rgba(255,255,255,0.10);
+        }
+        body { background:#0b0f13; color:#e6eef8; -webkit-font-smoothing:antialiased; font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+        .gradient-text { background: linear-gradient(90deg,#cbd5e1,#94a3b8,#fff); -webkit-background-clip:text; background-clip:text; color:transparent }
+        .search-box { backdrop-filter: blur(10px); background:var(--glass); border:1px solid rgba(255,255,255,0.03) }
+        .chip { background: rgba(255,255,255,0.03); padding:8px 12px; border-radius:999px; display:inline-flex; gap:8px; align-items:center; cursor:pointer; transition:all .18s; border:1px solid transparent }
+        .chip:hover { transform:translateY(-3px); border-color: rgba(255,255,255,0.06) }
+        .chip.active { background: linear-gradient(90deg,#0078c8,#FFD700); color:#041027; font-weight:700 }
+        .image-card { transition: transform .28s, box-shadow .28s; border-radius:12px; overflow:hidden; background: rgba(255,255,255,0.03); }
+        .image-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(2,6,23,0.6); }
+        .btn-mini { padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); font-weight:600 }
+        .sr-only { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+        @media (max-width:640px){
+          .hero-title { font-size:1.6rem }
+        }
+    </style>
+</head>
+<body id="vanta-bg">
+
+  <div class="container mx-auto px-4 py-10">
+    <!-- Header -->
+    <header class="text-center mb-10" data-aos="fade-down">
+      <span class="text-xs rounded-full mb-4 inline-block px-3 py-1 border border-gray-700 bg-gray-900 text-gray-300">✨ COMPANION — LATEST C-GEN MODEL</span>
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-3 gradient-text hero-title">GENERATING DEEP C-GEN VISUALS</h1>
+      <p class="text-gray-400 max-w-2xl mx-auto">Powered by INOXZENT.in CORPORATION & C GEN PROGRAMMERS — search trending topics and Web Auto - Images Searcher.</p>
+    </header>
+
+    <!-- Trending chips -->
+    <section class="max-w-4xl mx-auto mb-6" data-aos="fade-up">
+      <div class="flex flex-wrap gap-3 justify-center">
+        <div id="trendingChips"></div>
+      </div>
+    </section>
+
+    <!-- Search -->
+    <section class="max-w-3xl mx-auto mb-8" data-aos="fade-up">
+      <div class="search-box rounded-xl p-1 flex items-center">
+        <input type="text" id="searchBox" placeholder="Try: Milky Way Galaxy, street photography, line art, patterns & Feel free To ask..." 
+          class="flex-grow bg-transparent text-white px-6 py-4 rounded-lg focus:outline-none" aria-label="Search images">
+        <button id="searchBtn" class="ml-2 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white px-5 py-3 rounded-lg font-medium transition-all duration-200 flex items-center">
+          <i data-feather="search" class="mr-2"></i> Search
+        </button>
+      </div>
+      <div class="flex justify-center mt-3 text-gray-400 text-sm gap-3">
+        <button id="recentBtn" class="text-xs px-3 py-1 bg-transparent border border-white/5 rounded">Recent</button>
+        <button id="clearBtn" class="text-xs px-3 py-1 bg-transparent border border-white/5 rounded">Clear</button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="results" aria-live="polite">
+      <div class="image-card rounded-xl overflow-hidden p-0 bg-gray-800" data-aos="zoom-in">
+        <img src="hiestudio-3CvCAp2zYqQ.jpg" alt="Example" class="w-full h-96 object-cover" loading="lazy">
+        <div class="p-4">
+          <p class="text-gray-400 text-sm">Example: "Your Companion"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Load more -->
+    <div class="max-w-4xl mx-auto text-center mt-8">
+      <button id="loadMoreBtn" class="btn-mini px-4 py-2 hidden">Load more</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-16 text-center text-gray-400 text-sm">
+      <p>C GEN © 2025 | Developed by INOXZENT.in</p>
+    </footer>
+  </div>
+
+  <!-- Slideshow Modal -->
+  <div id="slideshow" class="fixed inset-0 hidden z-50 items-center justify-center bg-black bg-opacity-80">
+    <button onclick="closeSlideshow()" class="absolute top-6 right-6 text-white text-3xl bg-transparent border-0">×</button>
+    <div class="max-w-[92vw] max-h-[88vh]">
+      <img id="slideshowImg" src="" alt="Preview" class="rounded-lg max-h-[88vh] object-contain shadow-2xl block mx-auto"/>
+      <div class="mt-4 text-center space-x-3">
+        <button id="slideDownload" class="btn-mini">Direct download</button>
+        <button id="slideOpen" class="btn-mini">Open on Unsplash</button>
+        <button id="slideCopy" class="btn-mini">Copy link</button>
+      </div>
+    </div>
+  </div>
+
+ <script>
+  /**********************
+    Config & Globals
+  **********************/
+  const UNSPLASH_KEY = "Tgh-hjA--NPmEKQtcksxBbx9ht0GM2TZWE8Z1OejQmk"; // replace with your key
+  const RESULTS_PER_PAGE = 12;
+  let page = 1;
+  let lastQuery = "";
+  let totalPages = 1;
+
+  // Trending topics + icon mapping (feather icon names)
+  const trendingTopics = [
+    { label: "Icons", q: "icons", icon: "image" },
+    { label: "Line Art", q: "line art", icon: "pen-tool" },
+    { label: "Travel", q: "travel", icon: "map-pin" },
+    { label: "Patterns", q: "patterns", icon: "grid" },
+    { label: "Streets", q: "street photography", icon: "navigation" },
+    { label: "Photography", q: "photography", icon: "camera" }
+  ];
+
+  /**********************
+    UI: trending chips
+  **********************/
+  const chipsContainer = document.getElementById('trendingChips');
+  trendingTopics.forEach((t) => {
+    const div = document.createElement('div');
+    div.className = 'chip';
+    div.innerHTML = `<i data-feather="${t.icon}"></i><span>${t.label}</span>`;
+    div.title = `Search ${t.label}`;
+    div.onclick = () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      div.classList.add('active');
+      document.getElementById('searchBox').value = t.q;
+      searchImages(true);
+    };
+    chipsContainer.appendChild(div);
+  });
+
+  feather.replace();
+
+  /**********************
+    VANTA background
+  **********************/
+  try {
+    VANTA.GLOBE({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0x3f3f3f,
+      backgroundColor: 0x0b0f13,
+      size: 0.7
+    });
+  } catch (e) { console.warn("VANTA not loaded:", e); }
+
+  /**********************
+    AOS init
+  **********************/
+  AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+
+  /**********************
+    Helpers
+  **********************/
+  function qs(sel) { return document.querySelector(sel); }
+  function qsa(sel) { return Array.from(document.querySelectorAll(sel)); }
+
+  function safeFilename(name) {
+    return name.replace(/[^\w\-_. ]+/g, '').slice(0, 80);
+  }
+
+  async function downloadBlob(url, suggestedName = 'image.jpg') {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network response not ok');
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = suggestedName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.warn('Direct download failed, opening in new tab', err);
+      window.open(url, '_blank');
+    }
+  }
+
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Link copied to clipboard');
+    } catch (e) {
+      prompt('Copy link manually:', text);
+    }
+  }
+
+  /**********************
+    Rendering results
+  **********************/
+  const resultsDiv = document.getElementById('results');
+
+  function clearResults() {
+    resultsDiv.innerHTML = '';
+  }
+
+  function buildPhotoCard(photo) {
+    const card = document.createElement('article');
+    card.className = 'image-card rounded-xl overflow-hidden';
+    card.setAttribute('data-aos', 'zoom-in');
+
+    const img = document.createElement('img');
+    img.src = photo.urls.regular;
+    img.alt = photo.alt_description || photo.description || lastQuery || "Unsplash image";
+    img.loading = 'lazy';
+    img.className = 'w-full h-96 object-cover';
+
+    const info = document.createElement('div');
+    info.className = 'p-4 flex flex-col gap-2';
+
+    const desc = document.createElement('p');
+    desc.className = 'text-gray-300 text-sm truncate';
+    desc.textContent = photo.alt_description || lastQuery || 'Image';
+
+    const actionsRow = document.createElement('div');
+    actionsRow.className = 'flex justify-between items-center mt-2';
+
+    const left = document.createElement('div');
+    left.innerHTML = `<a href="${photo.user.links.html}?utm_source=ultra_image_generator&utm_medium=referral" target="_blank" class="text-xs text-blue-300 hover:underline">Photo by ${photo.user.name}</a>`;
+
+    const right = document.createElement('div');
+    right.className = 'flex gap-2 items-center';
+
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'btn-mini flex items-center';
+    downloadBtn.innerHTML = `<i data-feather="download" class="mr-2"></i>Direct`;
+    downloadBtn.title = 'Direct download';
+    downloadBtn.onclick = (e) => {
+      e.stopPropagation();
+      const fname = safeFilename(`${photo.user.username}-${photo.id}.jpg`);
+      downloadBlob(photo.urls.full || photo.urls.raw || photo.urls.regular, fname);
+    };
+
+    const openBtn = document.createElement('button');
+    openBtn.className = 'btn-mini';
+    openBtn.textContent = 'Open';
+    openBtn.onclick = (e) => {
+      e.stopPropagation();
+      window.open(photo.links.html + '?utm_source=ultra_image_generator&utm_medium=referral', '_blank');
+    };
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn-mini';
+    copyBtn.innerHTML = `<i data-feather="copy"></i>`;
+    copyBtn.title = 'Copy image link';
+    copyBtn.onclick = (e) => {
+      e.stopPropagation();
+      copyToClipboard(photo.urls.full || photo.urls.regular);
+    };
+
+    card.onclick = () => {
+      openSlideshow(photo.urls.full || photo.urls.regular, photo.links.html);
+    };
+
+    right.appendChild(downloadBtn);
+    right.appendChild(openBtn);
+    right.appendChild(copyBtn);
+    actionsRow.appendChild(left);
+    actionsRow.appendChild(right);
+
+    info.appendChild(desc);
+    info.appendChild(actionsRow);
+
+    card.appendChild(img);
+    card.appendChild(info);
+
+    return card;
+  }
+
+  /**********************
+    Search function
+  **********************/
+  async function searchImages(reset = true) {
+    const qbox = document.getElementById('searchBox');
+    const query = (qbox.value || '').trim() || 'technology';
+    if (!query) return;
+    lastQuery = query;
+    if (reset) { page = 1; clearResults(); }
+    document.getElementById('searchBtn').disabled = true;
+    document.getElementById('searchBtn').textContent = 'Searching...';
+
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${RESULTS_PER_PAGE}&page=${page}&client_id=${UNSPLASH_KEY}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      totalPages = data.total_pages || 1;
+
+      if (data.results && data.results.length) {
+        data.results.forEach(photo => {
+          const card = buildPhotoCard(photo);
+          resultsDiv.appendChild(card);
+        });
+      } else if (page === 1) {
+        resultsDiv.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">No results for "<strong>${query}</strong>". Try another topic or a trending chip above.</div>`;
+      }
+
+      if (page < totalPages) {
+        document.getElementById('loadMoreBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('loadMoreBtn').classList.add('hidden');
+      }
+
+      feather.replace();
+      AOS.refresh();
+      page++;
+    } catch (err) {
+      console.error(err);
+      if (page === 1) {
+        resultsDiv.innerHTML = `<div class="col-span-full text-center py-12 text-red-400">Error fetching images. Try again later.</div>`;
+      }
+    } finally {
+      document.getElementById('searchBtn').disabled = false;
+      document.getElementById('searchBtn').innerHTML = `<i data-feather="search"></i> Search`;
+      feather.replace();
+    }
+  }
+
+  /**********************
+    Upgrade to Pro Popup
+  **********************/
+  function showProPopup() {
+    document.getElementById("proPopup").classList.remove("hidden");
+  }
+  function closeProPopup() {
+    document.getElementById("proPopup").classList.add("hidden");
+  }
+
+  // Patch searchImages to show popup every search
+  (function patchSearchPro() {
+    const origSearch = searchImages;
+    window.searchImages = async function (reset = true) {
+      await origSearch(reset);
+      showProPopup();
+    };
+  })();
+
+  /**********************
+    Buttons & Hooks
+  **********************/
+  document.getElementById('searchBtn').addEventListener('click', () => searchImages(true));
+  document.getElementById('searchBox').addEventListener('keydown', (e) => { if (e.key === 'Enter') searchImages(true); });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('searchBox').value = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    clearResults();
+    resultsDiv.innerHTML = `<div class="image-card rounded-xl overflow-hidden p-0 bg-gray-800" data-aos="zoom-in">
+      <img src="https://source.unsplash.com/800x600/?galaxy" alt="Example" class="w-full h-96 object-cover" loading="lazy">
+      <div class="p-4"><p class="text-gray-400 text-sm">Example: "Milky Way Galaxy"</p></div>
+    </div>`;
+  });
+
+  document.getElementById('recentBtn').addEventListener('click', () => {
+    const hist = JSON.parse(localStorage.getItem('cgen_history') || '[]');
+    if (!hist.length) return alert('No recent searches yet');
+    const last = hist.slice(-1)[0];
+    document.getElementById('searchBox').value = last;
+    searchImages(true);
+  });
+
+  (function patchSearchSave() {
+    const origSearch = searchImages;
+    window.searchImages = async function (reset = true) {
+      const q = (document.getElementById('searchBox').value || '').trim();
+      if (q) {
+        let hist = JSON.parse(localStorage.getItem('cgen_history') || '[]');
+        if (!hist.includes(q)) {
+          hist.push(q);
+          if (hist.length > 20) hist.shift();
+          localStorage.setItem('cgen_history', JSON.stringify(hist));
+        }
+      }
+      await origSearch(reset);
+    };
+  })();
+
+  document.getElementById('loadMoreBtn').addEventListener('click', () => searchImages(false));
+
+  /**********************
+    Slideshow
+  **********************/
+  const slideshow = document.getElementById('slideshow');
+  const slideshowImg = document.getElementById('slideshowImg');
+  const slideDownload = document.getElementById('slideDownload');
+  const slideOpen = document.getElementById('slideOpen');
+  const slideCopy = document.getElementById('slideCopy');
+
+  let currentOpenUrl = null;
+  let currentOpenUnsplash = null;
+
+  function openSlideshow(imgUrl, unsplashUrl) {
+    currentOpenUrl = imgUrl;
+    currentOpenUnsplash = unsplashUrl || null;
+    slideshowImg.src = imgUrl;
+    slideshow.classList.remove('hidden');
+    slideshow.classList.add('flex');
+    slideDownload.onclick = () => downloadBlob(currentOpenUrl, 'cgen-image.jpg');
+    slideOpen.onclick = () => { if (currentOpenUnsplash) window.open(currentOpenUnsplash + '?utm_source=ultra_image_generator&utm_medium=referral', '_blank'); };
+    slideCopy.onclick = () => copyToClipboard(currentOpenUrl);
+  }
+  function closeSlideshow() {
+    slideshow.classList.add('hidden'); slideshow.classList.remove('flex');
+    slideshowImg.src = '';
+    currentOpenUrl = null; currentOpenUnsplash = null;
+  }
+
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSlideshow(); });
+
+  /**********************
+    Init
+  **********************/
+  (function init() {
+    feather.replace();
+    AOS.refresh();
+  })();
+</script>
+</body>
+</html>
